@@ -1,5 +1,92 @@
+// Dark Mode Toggle Functionality
+function toggleTheme() {
+    const body = document.body;
+    const isDarkMode = body.classList.contains('dark-theme');
+    
+    if (isDarkMode) {
+        body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+        showThemeMessage('Đã chuyển sang chế độ sáng ☀️');
+    } else {
+        body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+        showThemeMessage('Đã chuyển sang chế độ tối 🌙');
+    }
+}
+
+// Load saved theme on page load
+function loadSavedTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+}
+
+// Show theme change message
+function showThemeMessage(message) {
+    // Create a small notification
+    const notification = document.createElement('div');
+    notification.className = 'theme-notification';
+    notification.textContent = message;
+    
+    // Add notification styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--notification-bg, #667eea);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 25px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        font-size: 0.9rem;
+    `;
+    
+    // Add animation styles if not already added
+    if (!document.querySelector('#theme-notification-styles')) {
+        const styleElement = document.createElement('style');
+        styleElement.id = 'theme-notification-styles';
+        styleElement.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+            body.dark-theme .theme-notification {
+                --notification-bg: #4a5568;
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after animation
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
 // Smooth scrolling for navigation links
 document.addEventListener('DOMContentLoaded', function() {
+    // Load saved theme first
+    loadSavedTheme();
     // Get all navigation links
     const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
     
